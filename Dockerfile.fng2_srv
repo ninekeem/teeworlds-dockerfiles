@@ -1,0 +1,25 @@
+FROM alpine:latest AS build
+RUN apk update
+RUN apk add --no-cache git
+RUN git clone https://github.com/Jupeyy/teeworlds-fng2-mod
+RUN apk add --no-cache \
+		cmake \ 
+		make \
+		g++ \
+		gcc \
+		python3 \
+		zlib-dev
+WORKDIR /teeworlds-fng2-mod
+RUN git checkout fng_06
+RUN mkdir build
+WORKDIR build
+RUN cmake .. \
+	-Wno-dev
+RUN make install -j$(nproc)
+
+FROM alpine:latest
+RUN apk add --no-cache libstdc++
+COPY --from=build /usr/local/share/fng/ /usr/local/share/fng/
+COPY --from=build /usr/local/bin/ /usr/local/bin/
+WORKDIR /usr/local/share/fng/data/
+ENTRYPOINT ["fng2_srv"]
