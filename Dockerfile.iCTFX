@@ -1,0 +1,44 @@
+FROM alpine:latest AS build
+RUN apk update
+RUN apk add --no-cache git
+RUN git clone --recursive https://github.com/teeworlds-instagib-elo/iCTFX
+RUN apk add --no-cache \
+		cmake \
+		curl-dev \
+		make \
+		g++ \
+		gcc \
+		mysql \
+		mysql-dev \
+		ninja \
+		python3 \
+		sqlite-dev \
+		zlib-dev
+WORKDIR /iCTFX
+#RUN git switch 0.6
+#RUN git submodule update --init
+RUN mkdir build
+WORKDIR build
+RUN cmake .. \
+	-Wno-dev \
+	-DCMAKE_BUILD_TYPE=Release \
+	-DPREFER_BUNDLED_LIBS=OFF \
+	-DWEBSOCKETS=OFF \
+	-DMYSQL=OFF \
+	-DTEST_MYSQL=OFF \
+	-DAUTOUPDATE=OFF \
+	-DCLIENT=OFF \
+	-DVIDEORECORDER=OFF \
+	-DDOWNLOAD_GTEST=OFF \
+	-DDEV=OFF \
+	-DUPNP=OFF \
+	-DVULKAN=OFF
+
+RUN make install -j$(nproc)
+
+FROM alpine:latest
+RUN apk add --no-cache curl-dev libstdc++ sqlite-dev
+COPY --from=build /usr/local/share/ddnet/ /usr/local/share/ddnet/
+COPY --from=build /usr/local/bin/ /usr/local/bin/
+WORKDIR /usr/local/share/ddnet/data/
+ENTRYPOINT ["DDNet-Server"]
