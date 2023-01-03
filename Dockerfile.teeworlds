@@ -16,7 +16,8 @@ RUN git switch 0.6
 RUN git submodule update --init
 RUN mkdir build
 WORKDIR build
-RUN cmake -Wno-dev -DCLIENT=OFF ..
+RUN cmake .. -Wno-dev \
+		-DCLIENT=OFF
 RUN make install -j$(nproc)
 
 FROM alpine:latest
