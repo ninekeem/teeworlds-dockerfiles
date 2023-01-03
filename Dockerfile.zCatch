@@ -1,0 +1,44 @@
+FROM alpine:latest AS build
+RUN apk update
+RUN apk add --no-cache git
+RUN git clone --recursive https://github.com/jxsl13/zcatch
+RUN apk add --no-cache \
+		cmake \ 
+		curl-dev \
+		freetype-dev \
+		g++ \
+		gcc \
+		hiredis-dev \
+		make \
+		python3 \
+		sdl2-dev \
+		sqlite-dev \
+		wavpack-dev \
+		zlib-dev
+WORKDIR /zcatch
+RUN mkdir build
+WORKDIR build
+RUN cmake .. -Wno-dev \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DPREFER_BUNDLED_LIBS=OFF \
+		-DWEBSOCKETS=OFF \
+		-DMYSQL=OFF \
+		-DTEST_MYSQL=OFF \
+		-DAUTOUPDATE=OFF \
+		-DCLIENT=OFF \
+		-DVIDEORECORDER=OFF \
+		-DDOWNLOAD_GTEST=OFF \
+		-DDEV=OFF \
+		-DUPNP=OFF \
+		-DVULKAN=OFF
+
+RUN make install -j$(nproc)
+RUN ls /usr/local/bin
+RUN ls /usr/local/share
+
+FROM alpine:latest
+RUN apk add --no-cache libstdc++ sqlite
+COPY --from=build /usr/local/share/teeworlds/ /usr/local/share/teeworlds/
+COPY --from=build /usr/local/bin/ /usr/local/bin/
+WORKDIR /usr/local/share/teeworlds/data/
+ENTRYPOINT ["zcatch_srv"]
