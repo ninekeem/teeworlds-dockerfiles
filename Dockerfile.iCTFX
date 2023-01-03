@@ -15,8 +15,6 @@ RUN apk add --no-cache \
 		sqlite-dev \
 		zlib-dev
 WORKDIR /iCTFX
-#RUN git switch 0.6
-#RUN git submodule update --init
 RUN mkdir build
 WORKDIR build
 RUN cmake .. \
@@ -37,7 +35,7 @@ RUN cmake .. \
 RUN make install -j$(nproc)
 
 FROM alpine:latest
-RUN apk add --no-cache curl-dev libstdc++ sqlite-dev
+RUN apk add --no-cache curl-dev libstdc++ sqlite sqlite-dev
 COPY --from=build /usr/local/share/ddnet/ /usr/local/share/ddnet/
 COPY --from=build /usr/local/bin/ /usr/local/bin/
 WORKDIR /usr/local/share/ddnet/data/
