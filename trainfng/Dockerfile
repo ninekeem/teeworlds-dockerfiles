@@ -1,20 +1,20 @@
 FROM alpine:latest AS build
+
 RUN apk update
-RUN apk add --no-cache git
-RUN git clone https://github.com/35niavlys/teeworlds-trainfng
-RUN apk add --no-cache \
-		cmake \
-		curl-dev \
-		make \
-		g++ \
-		gcc \
-		libpng-dev \
-		python3 \
-		sqlite-dev \
-		zlib-dev
-WORKDIR /teeworlds-trainfng
-RUN mkdir build
-WORKDIR build
+RUN apk add git \
+			cmake \
+			curl-dev \
+			make \
+			g++ \
+			gcc \
+			libpng-dev \
+			python3 \
+			sqlite-dev \
+			zlib-dev
+
+RUN git clone --depth 1 https://github.com/35niavlys/teeworlds-trainfng
+
+WORKDIR /teeworlds-trainfng/build
 RUN cmake .. \
 	-Wno-dev \
 	-DAUTOUPDATE=OFF \

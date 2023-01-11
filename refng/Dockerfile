@@ -1,23 +1,24 @@
 FROM alpine:latest AS build
+
 RUN apk update
-RUN apk add --no-cache git
-RUN git clone https://github.com/teeworlds/teeworlds
-RUN apk add --no-cache \
-		cmake \
-		curl-dev \
-		make \
-		g++ \
-		gcc \
-		python3 \
-		sqlite-dev \
-		zlib-dev
-WORKDIR /teeworlds
-RUN git switch 0.6
-RUN git submodule update --init
-RUN mkdir build
-WORKDIR build
-RUN cmake .. -Wno-dev \
-		-DCLIENT=OFF
+RUN apk add git \
+			cmake \
+			curl-dev \
+			make \
+			g++ \
+			gcc \
+			python3 \
+			sqlite-dev \
+			zlib-dev
+
+RUN git clone --depth 1 \
+			  -b refng \
+			  --single-branch \
+			  --recursive \
+			  https://github.com/k0rae/teeworlds
+WORKDIR /teeworlds/build
+
+RUN cmake .. -Wno-dev -DCLIENT=OFF
 RUN make install -j$(nproc)
 
 FROM alpine:latest
