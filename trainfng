@@ -13,7 +13,6 @@ RUN apk add --no-cache \
 		sqlite-dev \
 		zlib-dev
 WORKDIR /teeworlds-trainfng
-RUN mkdir build
 WORKDIR build
 RUN cmake .. \
 	-Wno-dev \

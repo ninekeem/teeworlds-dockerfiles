@@ -11,7 +11,6 @@ RUN apk add --no-cache \
 		zlib-dev
 WORKDIR /teeworlds-fng2-mod
 RUN git checkout fng_06
-RUN mkdir build
 WORKDIR build
 RUN cmake .. \
 	-Wno-dev

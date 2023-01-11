@@ -14,7 +14,6 @@ RUN apk add --no-cache \
 WORKDIR /teeworlds
 RUN git switch 0.6
 RUN git submodule update --init
-RUN mkdir build
 WORKDIR build
 RUN cmake .. -Wno-dev \
 		-DCLIENT=OFF

@@ -7,4 +7,4 @@ RUN apk add npm
 RUN apk add nodejs
 WORKDIR tw-econ-antivpn
 RUN npm install
-ENTRYPOINT npm start
+ENTRYPOINT ["npm", "start"]
