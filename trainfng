@@ -11,9 +11,16 @@ RUN apk add --no-cache \
 		python3 \
 		sqlite-dev \
 		zlib-dev
+<<<<<<< HEAD
 
 WORKDIR /teeworlds-trainfng/build
 RUN cmake .. -Wno-dev \
+=======
+WORKDIR /teeworlds-trainfng
+WORKDIR build
+RUN cmake .. \
+	-Wno-dev \
+>>>>>>> 40f7361 (dockerfiles small refactoring)
 	-DAUTOUPDATE=OFF \
 	-DCLIENT=OFF \
 	-DMYSQL=OFF \
