@@ -1,11 +1,19 @@
 FROM debian:stable-slim AS build
 RUN apt update
-RUN apt install -y git
-RUN git clone https://github.com/35niavlys/teeworlds-godfng
-RUN apt install -y build-essential
-RUN apt install -y python3
+RUN apt install -y \
+	build-essential \
+	git \
+	python3
+
+RUN git clone \
+	--no-tags \
+	https://github.com/35niavlys/teeworlds-godfng
+
 COPY --from=bam:0.4.0 /bam /bam
-WORKDIR teeworlds-godfng
+WORKDIR /teeworlds-godfng
 RUN /bam/bam server_release
-RUN find / -iname 'fng.cfg'
-ENTRYPOINT ["./fng2_srv -f fng.cfg"]
+
+FROM debian:stable-slim
+COPY --from=build /teeworlds-godfng /teeworlds-godfng
+WORKDIR /teeworlds-godfng
+ENTRYPOINT ["./fng2_srv"]

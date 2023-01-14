@@ -1,10 +1,15 @@
 FROM alpine:latest
 RUN apk update
-RUN apk add git
-RUN git clone https://github.com/k0rae/tw-econ-antivpn
-RUN apk add icu-data-full
-RUN apk add npm
-RUN apk add nodejs
+RUN apk add --no-cache \
+	git \
+	icu-data-full \
+	nodejs \
+	npm
+
+RUN git clone \
+	--no-tags \
+	https://github.com/k0rae/tw-econ-antivpn
+
 WORKDIR tw-econ-antivpn
 RUN npm install
-ENTRYPOINT npm start
+ENTRYPOINT ["npm", "start"]
