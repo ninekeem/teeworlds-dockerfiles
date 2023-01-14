@@ -1,28 +1,30 @@
 FROM alpine:latest AS build
 RUN apk update
-RUN apk add --no-cache git
-RUN git clone https://github.com/k0rae/teeworlds --recurse-submodules
 RUN apk add --no-cache \
 		cmake \
 		curl-dev \
 		make \
 		g++ \
 		gcc \
+		git \
 		python3 \
 		sqlite-dev \
 		zlib-dev
-WORKDIR /teeworlds
-RUN git switch refng
-#RUN git submodule update --init
-RUN mkdir build
-WORKDIR build
+
+RUN git clone \
+	--branch fng_06 \
+	--no-tags \
+	https://github.com/k0rae/refng
+
+WORKDIR /refng/build
 RUN cmake .. -Wno-dev \
-		-DCLIENT=OFF
+	-DCLIENT=OFF
+
 RUN make install -j$(nproc)
 
 FROM alpine:latest
-RUN apk add --no-cache curl-dev libstdc++ sqlite-dev
-COPY --from=build /usr/local/share/teeworlds/ /usr/local/share/teeworlds/
+RUN apk add --no-cache libstdc++
+COPY --from=build /usr/local/share/fng/ /usr/local/share/fng/
 COPY --from=build /usr/local/bin/ /usr/local/bin/
-WORKDIR /usr/local/share/teeworlds/data/
-ENTRYPOINT ["teeworlds_srv"]
+WORKDIR /usr/local/share/fng/data/
+ENTRYPOINT ["fng2_srv"]
