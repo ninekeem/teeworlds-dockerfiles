@@ -1,16 +1,20 @@
 FROM alpine:latest AS build
-RUN apk add --no-cache git
-RUN git clone https://github.com/35niavlys/teeworlds-trainfng --no-tags
 RUN apk add --no-cache \
 		cmake \
 		curl-dev \
 		make \
 		g++ \
 		gcc \
+		git \
 		libpng-dev \
 		python3 \
 		sqlite-dev \
 		zlib-dev
+
+RUN git clone \
+	--no-tags \
+	--progress \
+	https://github.com/35niavlys/teeworlds-trainfng
 
 WORKDIR /teeworlds-trainfng/build
 RUN cmake .. -Wno-dev \
@@ -19,6 +23,7 @@ RUN cmake .. -Wno-dev \
 	-DMYSQL=OFF \
 	-DVIDEORECORDER=OFF \
 	-DUPNP=OFF
+
 RUN make install -j$(nproc)
 
 FROM alpine:latest
