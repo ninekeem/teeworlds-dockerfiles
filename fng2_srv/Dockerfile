@@ -1,31 +1,26 @@
 FROM alpine:latest AS build
-RUN apk update
+
 RUN apk add --no-cache \
+		git \
 		cmake \
-		curl-dev \
 		make \
 		g++ \
 		gcc \
-		git \
 		python3 \
-		sqlite-dev \
 		zlib-dev
-<<<<<<< HEAD
 
 RUN git clone \
-	--branch fng_06 \
-	--no-tags \
-	https://github.com/k0rae/refng
+		--depth 1 \
+		-b fng_06 \ 
+		--single-branch \
+	https://github.com/Jupeyy/teeworlds-fng2-mod
 
-WORKDIR /refng/build
-=======
-WORKDIR /teeworlds
-RUN git switch refng
-#RUN git submodule update --init
-WORKDIR build
->>>>>>> 40f7361 (dockerfiles small refactoring)
-RUN cmake .. -Wno-dev \
-	-DCLIENT=OFF
+WORKDIR /teeworlds-fng2-mod
+RUN sed -i 's/MAX_CLIENTS=16/MAX_CLIENTS=64/' src/engine/shared/protocol.h
+RUN sed -i 's/NET_MAX_CLIENTS = 16/NET_MAX_CLIENTS = 64/' src/engine/shared/network.h
+
+WORKDIR /teeworlds-fng2-mod/build
+RUN cmake .. -Wno-dev
 
 RUN make install -j$(nproc)
 

@@ -1,30 +1,26 @@
 FROM alpine:latest AS build
+
 RUN apk add --no-cache \
+		git \
 		cmake \
 		curl-dev \
 		make \
 		g++ \
 		gcc \
-		git \
 		libpng-dev \
 		python3 \
 		sqlite-dev \
 		zlib-dev
-<<<<<<< HEAD
 
 RUN git clone \
-	--no-tags \
-	--progress \
+		--depth 1 \
+		--single-branch \
+		--no-tags \
 	https://github.com/35niavlys/teeworlds-trainfng
 
 WORKDIR /teeworlds-trainfng/build
-RUN cmake .. -Wno-dev \
-=======
-WORKDIR /teeworlds-trainfng
-WORKDIR build
 RUN cmake .. \
 	-Wno-dev \
->>>>>>> 40f7361 (dockerfiles small refactoring)
 	-DAUTOUPDATE=OFF \
 	-DCLIENT=OFF \
 	-DMYSQL=OFF \

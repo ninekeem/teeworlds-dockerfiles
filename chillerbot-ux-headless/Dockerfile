@@ -1,0 +1,70 @@
+FROM debian:latest as build
+
+RUN apt update && apt install \
+		build-essential \
+		cargo \
+		cmake \
+		git \
+		glslang-tools \
+		libavcodec-extra \
+		libavdevice-dev \
+		libavfilter-dev \
+		libavformat-dev \
+		libavutil-dev \
+		libcurl4-openssl-dev \
+		libfreetype6-dev \
+		libglew-dev \
+		libnotify-dev \
+		libogg-dev \
+		libopus-dev \
+		libopusfile-dev \
+		libpng-dev \
+		libsdl2-dev \
+		libsqlite3-dev \
+		libssl-dev \
+		libwavpack-dev \
+		libx264-dev \
+		python \
+		rustc \
+		spirv-tools \
+		libncurses-dev -y
+
+RUN git clone \
+		--depth 1 \
+		--recursive \
+	https://github.com/chillerbot/chillerbot-ux
+
+WORKDIR /chillerbot-ux/build
+RUN cmake .. -DHEADLESS_CLIENT=ON \
+			 -DAUTOUPDATE=OFF \
+			 -DVIDEORECORDER=OFF \
+			 -DVULKAN=OFF
+RUN make -j$(nproc)
+
+RUN make install
+
+FROM debian:latest
+RUN apt update && apt install \
+		libavformat58 \
+		libavdevice58 \
+		libavfilter7 \
+		libavutil56 \
+		libcurl4 \
+		libfreetype6 \
+		libglew2.1 \
+		libnotify4 \
+		libogg0 \
+		libopus0 \
+		libopusfile0 \
+		libpng16-16 \
+		libsdl2-2.0-0 \
+		libsqlite3-0 \
+		libssl1.1 \
+		libwavpack1 \
+		x264 -y 
+COPY --from=build /usr/local/share/ddnet/data /usr/local/share/ddnet/data
+COPY --from=build /usr/local/bin/chillerbot-ux /usr/local/bin/chillerbot-ux
+COPY --from=build /usr/local/bin/DDNet-Server /usr/local/bin/DDNet-Server
+COPY --from=build /usr/local/lib/chillerbot-ux /usr/local/lib/chillerbot-ux
+ENTRYPOINT ["chillerbot-ux"]
+CMD ["-c", "chillerbot-ux"]
