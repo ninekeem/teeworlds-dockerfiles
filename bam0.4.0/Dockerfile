@@ -1,12 +1,9 @@
 FROM debian:oldstable-slim AS build
 
-RUN apt update
-RUN apt install git build-essential -y
+RUN apt update && apt install git build-essential -y
 
-RUN git clone --depth 1 \
-              -b 0.4.0 \
-              --single-branch \
-              https://github.com/matricks/bam
+RUN git clone https://github.com/matricks/bam
 
 WORKDIR /bam
+RUN git checkout v0.4.0
 RUN ./make_unix.sh
