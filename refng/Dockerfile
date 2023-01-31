@@ -30,7 +30,7 @@ RUN apk add --no-cache libstdc++
 COPY --from=build /usr/local/share/fng/ /usr/local/share/fng/
 COPY --from=build /usr/local/bin/ /usr/local/bin/
 COPY refng.cfg /usr/local/share/fng/data/autoexec.cfg
-COPY maps/*.map /usr/local/share/fng/data/maps
+COPY maps/*.map /usr/local/share/fng/data/maps/
 COPY refng.sh /usr/local/bin/refng.sh
 WORKDIR /usr/local/share/fng/data/
 ENTRYPOINT ["refng.sh"]
