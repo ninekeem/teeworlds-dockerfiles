@@ -27,8 +27,8 @@ RUN make install -j$(nproc)
 FROM alpine:latest
 RUN apk add --no-cache \
 		curl-dev \
+		cmd:ss \
 		libstdc++ \
-		cmd:patch \
 		sqlite-dev
 
 COPY --from=build /usr/local/share/teeworlds/ /usr/local/share/teeworlds/
@@ -37,3 +37,10 @@ COPY teeworlds.cfg /usr/local/share/teeworlds/data/autoexec.cfg
 COPY teeworlds_srv.sh /usr/local/bin/teeworlds_srv.sh
 WORKDIR /usr/local/share/teeworlds/data/
 ENTRYPOINT ["teeworlds_srv.sh"]
+ENV EC_PORT=8303
+HEALTHCHECK \
+	--interval=10s \
+	--timeout=10s \
+	--start-period=3s \
+	--retries=2 \
+	CMD ss -lt | grep "$EC_PORT"

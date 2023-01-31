@@ -26,7 +26,7 @@ RUN cmake .. \
 RUN make install -j$(nproc)
 
 FROM alpine:latest
-RUN apk add --no-cache libstdc++
+RUN apk add --no-cache cmd:ss libstdc++
 COPY --from=build /usr/local/share/fng/ /usr/local/share/fng/
 COPY --from=build /usr/local/bin/ /usr/local/bin/
 COPY refng.cfg /usr/local/share/fng/data/autoexec.cfg
@@ -34,3 +34,10 @@ COPY maps/*.map /usr/local/share/fng/data/maps/
 COPY refng.sh /usr/local/bin/refng.sh
 WORKDIR /usr/local/share/fng/data/
 ENTRYPOINT ["refng.sh"]
+ENV EC_PORT=8303
+HEALTHCHECK \
+	--interval=10s \
+	--timeout=10s \
+	--start-period=3s \
+	--retries=2 \
+	CMD ss -lt | grep "$EC_PORT"
