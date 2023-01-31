@@ -28,4 +28,4 @@ HEALTHCHECK \
 	--timeout=10s \
 	--start-period=3s \
 	--retries=2 \
-	CMD ss -lt | grep "$EC_PORT"
+	CMD ss -4lt | grep "$EC_PORT"
