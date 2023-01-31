@@ -33,5 +33,8 @@ FROM alpine:latest
 RUN apk add --no-cache libcurl libstdc++ sqlite-dev
 COPY --from=build /usr/local/share/ddnet/ /usr/local/share/ddnet/
 COPY --from=build /usr/local/bin/ /usr/local/bin/
+COPY trainfng.cfg /usr/local/share/ddnet/data/autoexec_server.cfg
+COPY maps/*.map /us/local/share/ddnet/data/maps/
+COPY TrainFNG.sh /usr/local/bin/TrainFNG.sh
 WORKDIR /usr/local/share/ddnet/data/
-ENTRYPOINT ["TrainFNG-Server"]
+ENTRYPOINT ["TrainFNG.sh"]

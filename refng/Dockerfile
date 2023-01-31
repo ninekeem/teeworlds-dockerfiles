@@ -13,20 +13,24 @@ RUN apk add --no-cache \
 
 RUN git clone \
 		--depth 1 \
-		--branch refng \
+		--branch fng_06 \
 		--single-branch \
 		--no-tags \
-		--recursive \
-	https://github.com/k0rae/teeworlds
+		#--recursive \
+		https://github.com/k0rae/refng
 
-WORKDIR /teeworlds/build
-RUN cmake .. -Wno-dev -DCLIENT=OFF
+WORKDIR /refng/build
+RUN cmake .. \
+	-Wno-dev
 
 RUN make install -j$(nproc)
 
 FROM alpine:latest
 RUN apk add --no-cache libstdc++
-COPY --from=build /usr/local/share/teeworlds/ /usr/local/share/teeworlds/
+COPY --from=build /usr/local/share/fng/ /usr/local/share/fng/
 COPY --from=build /usr/local/bin/ /usr/local/bin/
-WORKDIR /usr/local/share/teeworlds/data/
-ENTRYPOINT ["teeworlds_srv"]
+COPY refng.cfg /usr/local/share/fng/data/autoexec.cfg
+COPY maps/*.map /usr/local/share/fng/data/maps
+COPY refng.sh /usr/local/bin/refng.sh
+WORKDIR /usr/local/share/fng/data/
+ENTRYPOINT ["refng.sh"]

@@ -11,7 +11,7 @@ RUN apk add --no-cache \
 
 RUN git clone \
 		--depth 1 \
-		-b fng_06 \ 
+		--branch fng_06 \ 
 		--single-branch \
 	https://github.com/Jupeyy/teeworlds-fng2-mod
 

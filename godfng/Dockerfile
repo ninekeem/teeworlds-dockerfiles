@@ -16,5 +16,8 @@ RUN /bam/bam server_release
 
 FROM debian:stable-slim
 COPY --from=build /teeworlds-godfng /teeworlds-godfng
+COPY godfng.cfg /teeworlds-godfng/autoexec.cfg
+COPY maps/*.map /teeworlds-godfng/data/maps/
+COPY godfng.sh /usr/local/bin/godfng.sh
 WORKDIR /teeworlds-godfng
-ENTRYPOINT ["./fng2_srv"]
+ENTRYPOINT ["godfng.sh"]

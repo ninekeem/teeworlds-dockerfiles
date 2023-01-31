@@ -13,18 +13,27 @@ RUN apk add --no-cache \
 
 RUN git clone \
 		--depth 1 \
-		-b 0.6 \
+		--branch 0.6 \
 		--single-branch \
 		--recursive \
-	https://github.com/teeworlds/teeworlds
+		https://github.com/teeworlds/teeworlds
 
 WORKDIR /teeworlds/build
-RUN cmake .. -Wno-dev -DCLIENT=OFF
+RUN cmake .. \
+	-Wno-dev \
+	-DCLIENT=OFF
 RUN make install -j$(nproc)
 
 FROM alpine:latest
-RUN apk add --no-cache curl-dev libstdc++ sqlite-dev
+RUN apk add --no-cache \
+		curl-dev \
+		libstdc++ \
+		cmd:patch \
+		sqlite-dev
+
 COPY --from=build /usr/local/share/teeworlds/ /usr/local/share/teeworlds/
 COPY --from=build /usr/local/bin/ /usr/local/bin/
+COPY teeworlds.cfg /usr/local/share/teeworlds/data/autoexec.cfg
+COPY teeworlds_srv.sh /usr/local/bin/teeworlds_srv.sh
 WORKDIR /usr/local/share/teeworlds/data/
-ENTRYPOINT ["teeworlds_srv"]
+ENTRYPOINT ["teeworlds_srv.sh"]
