@@ -20,7 +20,7 @@ RUN apk add --no-cache \
 
 WORKDIR ddnet/build
 RUN cmake .. -Wnodev \
-	-DWEBSOCKETS=ON \
+	-DWEBSOCKETS=OFF \
 	-DMYSQL=OFF \
 	-DAUTOUPDATE=OFF \
 	-DCLIENT=OFF \
