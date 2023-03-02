@@ -30,7 +30,7 @@ RUN cmake .. \
 RUN make install -j$(nproc)
 
 FROM alpine:latest
-RUN apk add --no-cache cmd:ss libcurl libstdc++ sqlite-dev
+RUN apk add --no-cache libcurl libstdc++ sqlite-dev
 COPY --from=build /usr/local/share/ddnet/ /usr/local/share/ddnet/
 COPY --from=build /usr/local/bin/ /usr/local/bin/
 COPY trainfng.cfg /usr/local/share/ddnet/data/autoexec_server.cfg
@@ -38,10 +38,3 @@ COPY maps/*.map /usr/local/share/ddnet/data/maps/
 COPY TrainFNG.sh /usr/local/bin/TrainFNG.sh
 WORKDIR /usr/local/share/ddnet/data/
 ENTRYPOINT ["TrainFNG.sh"]
-ENV EC_PORT=8303
-HEALTHCHECK \
-	--interval=10s \
-	--timeout=10s \
-	--start-period=3s \
-	--retries=2 \
-	CMD ss -4lt | grep "$EC_PORT"
