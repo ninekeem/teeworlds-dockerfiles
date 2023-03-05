@@ -1,23 +1,23 @@
 FROM alpine:latest AS build
 
 RUN apk add --no-cache \
-		git \
-		cmake \
-		curl-dev \
-		make \
-		g++ \
-		gcc \
-		python3 \
-		sqlite-dev \
-		zlib-dev
+	git \
+	cmake \
+	curl-dev \
+	make \
+	g++ \
+	gcc \
+	python3 \
+	sqlite-dev \
+	zlib-dev
 
 RUN git clone \
-		--depth 1 \
-		--branch fng_06 \
-		--single-branch \
-		--no-tags \
-		#--recursive \
-		https://github.com/k0rae/refng
+	--depth 1 \
+	--branch fng_06 \
+	--single-branch \
+	--no-tags \
+	--recursive \
+	https://github.com/k0rae/refng
 
 WORKDIR /refng/build
 RUN cmake .. \

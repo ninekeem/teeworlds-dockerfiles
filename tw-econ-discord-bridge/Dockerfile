@@ -7,7 +7,7 @@ RUN apk add --no-cache \
 		npm
 
 RUN git clone \
-		--no-tags \
+	--no-tags \
 	https://github.com/k0rae/tw-econ-discord-bridge
 
 WORKDIR /tw-econ-discord-bridge

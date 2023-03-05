@@ -1,21 +1,39 @@
-FROM debian:stable-slim AS build
-
-RUN apt update && apt install \
-		git \
-		build-essential \
-		python3 -y
+FROM alpine:latest AS bam
+RUN apk update
+RUN apk add --no-cache \
+	gcc \
+	git \
+	musl-dev
 
 RUN git clone \
-		--depth 1 \
-		--no-tags \
+	https://github.com/matricks/bam
+
+WORKDIR /bam
+RUN git checkout v0.4.0
+RUN ./make_unix.sh
+
+FROM alpine:latest AS build
+RUN apk update
+RUN apk add --no-cache \
+	gcc \
+	g++ \
+	git \
+	python3
+
+RUN git clone \
+	--depth 1 \
+	--no-tags \
 	https://github.com/35niavlys/teeworlds-godfng
 
 WORKDIR /teeworlds-godfng
-COPY --from=bam:0.4.0 /bam /bam
+COPY --from=bam /bam /bam
 RUN /bam/bam server_release
 
-FROM debian:stable-slim
-RUN apt update && apt install -y iproute2
+FROM alpine:latest
+RUN apk update
+RUN apk add --no-cache \
+	cmd:ss
+
 COPY --from=build /teeworlds-godfng /teeworlds-godfng
 COPY godfng.cfg /teeworlds-godfng/autoexec.cfg
 COPY maps/*.map /teeworlds-godfng/data/maps/
@@ -28,4 +46,4 @@ HEALTHCHECK \
 	--timeout=10s \
 	--start-period=3s \
 	--retries=2 \
-	CMD ss -4lt | grep "$EC_PORT"
+	CMD ss -4lnt | grep "$EC_PORT"

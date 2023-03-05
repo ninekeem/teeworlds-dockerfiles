@@ -14,29 +14,32 @@ RUN apk add --no-cache \
 	gcc \ 
 	g++ \
 	libpng-dev \
+	libwebsockets-dev \
 	ninja \
 	python3 \
 	sqlite-dev
 
 WORKDIR ddnet/build
 RUN cmake .. -Wnodev \
-	-DWEBSOCKETS=OFF \
+	-DWEBSOCKETS=ON \
 	-DMYSQL=OFF \
 	-DAUTOUPDATE=OFF \
 	-DCLIENT=OFF \
 	-DVIDEORECORDER=OFF \
 	-DVULKAN=OFF \
 	-GNinja \
-	-DIPO=OFF
+	-DIPO=ON
 
 RUN ninja
 
 FROM alpine:latest
 RUN apk update
 RUN apk add --no-cache \
+	cmd:ss \
 	libcurl \
 	libgcc \
 	libstdc++ \
+	libwebsockets \
 	sqlite-libs
 	
 COPY --from=build /ddnet/build /ddnet
@@ -44,3 +47,9 @@ COPY ddnet.cfg /ddnet/data/autoexec_server.cfg
 COPY DDNet-Server.sh /ddnet/DDNet-Server.sh
 WORKDIR /ddnet
 ENTRYPOINT ["./DDNet-Server.sh"]
+HEALTHCHECK \
+	--interval=10s \
+	--timeout=10s \
+	--start-period=3s \
+	--retries=2 \
+	CMD ss -4lnt | grep "$EC_PORT"

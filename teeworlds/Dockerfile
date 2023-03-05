@@ -1,22 +1,22 @@
 FROM alpine:latest AS build
 
 RUN apk add --no-cache \
-		git \
-		cmake \
-		curl-dev \
-		make \
-		g++ \
-		gcc \
-		python3 \
-		sqlite-dev \
-		zlib-dev
+	git \
+	cmake \
+	curl-dev \
+	make \
+	g++ \
+	gcc \
+	python3 \
+	sqlite-dev \
+	zlib-dev
 
 RUN git clone \
-		--depth 1 \
-		--branch 0.6 \
-		--single-branch \
-		--recursive \
-		https://github.com/teeworlds/teeworlds
+	--depth 1 \
+	--branch 0.6 \
+	--single-branch \
+	--recursive \
+	https://github.com/teeworlds/teeworlds
 
 WORKDIR /teeworlds/build
 RUN cmake .. \
@@ -26,10 +26,10 @@ RUN make install -j$(nproc)
 
 FROM alpine:latest
 RUN apk add --no-cache \
-		curl-dev \
-		cmd:ss \
-		libstdc++ \
-		sqlite-dev
+	curl-dev \
+	cmd:ss \
+	libstdc++ \
+	sqlite-dev
 
 COPY --from=build /usr/local/share/teeworlds/ /usr/local/share/teeworlds/
 COPY --from=build /usr/local/bin/ /usr/local/bin/
