@@ -22,6 +22,7 @@ WORKDIR /teeworlds/build
 RUN cmake .. \
 	-Wno-dev \
 	-DCLIENT=OFF
+
 RUN make install -j$(nproc)
 
 FROM alpine:latest
