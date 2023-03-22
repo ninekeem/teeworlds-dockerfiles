@@ -14,14 +14,13 @@ RUN apk add --no-cache \
 	gcc \ 
 	g++ \
 	libpng-dev \
-	libwebsockets-dev \
 	ninja \
 	python3 \
 	sqlite-dev
 
 WORKDIR ddnet/build
 RUN cmake .. -Wnodev \
-	-DWEBSOCKETS=ON \
+	-DWEBSOCKETS=OFF \
 	-DMYSQL=OFF \
 	-DAUTOUPDATE=OFF \
 	-DCLIENT=OFF \
@@ -37,9 +36,7 @@ RUN apk update
 RUN apk add --no-cache \
 	cmd:ss \
 	libcurl \
-	libgcc \
 	libstdc++ \
-	libwebsockets \
 	sqlite-libs
 	
 COPY --from=build /ddnet/build /ddnet

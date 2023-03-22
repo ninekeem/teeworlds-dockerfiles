@@ -27,10 +27,8 @@ RUN make install -j$(nproc)
 
 FROM alpine:latest
 RUN apk add --no-cache \
-	curl-dev \
 	cmd:ss \
-	libstdc++ \
-	sqlite-dev
+	libstdc++
 
 COPY --from=build /usr/local/share/teeworlds/ /usr/local/share/teeworlds/
 COPY --from=build /usr/local/bin/ /usr/local/bin/

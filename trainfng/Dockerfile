@@ -27,7 +27,7 @@ RUN cmake .. \
 	-DMYSQL=OFF \
 	-DVIDEORECORDER=OFF \
 	-DUPNP=OFF \
-	-DWEBSOCKETS=ON
+	-DWEBSOCKETS=OFF
 
 RUN make install -j$(nproc)
 

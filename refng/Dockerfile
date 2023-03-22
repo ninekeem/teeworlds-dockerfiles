@@ -26,7 +26,10 @@ RUN cmake .. \
 RUN make install -j$(nproc)
 
 FROM alpine:latest
-RUN apk add --no-cache cmd:ss libstdc++
+RUN apk add --no-cache \
+	cmd:ss \
+	libstdc++
+
 COPY --from=build /usr/local/share/fng/ /usr/local/share/fng/
 COPY --from=build /usr/local/bin/ /usr/local/bin/
 COPY refng.cfg /usr/local/share/fng/data/autoexec.cfg

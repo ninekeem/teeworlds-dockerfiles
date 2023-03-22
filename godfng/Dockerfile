@@ -32,7 +32,8 @@ RUN /bam/bam server_release
 FROM alpine:latest
 RUN apk update
 RUN apk add --no-cache \
-	cmd:ss
+	cmd:ss \
+	libstdc++
 
 COPY --from=build /teeworlds-godfng /teeworlds-godfng
 COPY godfng.cfg /teeworlds-godfng/autoexec.cfg
