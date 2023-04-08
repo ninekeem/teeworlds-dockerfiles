@@ -2,7 +2,7 @@
 Dockerfiles of my teeworlds servers
 
 How to build docker images:  
-`cd refng`
+`cd refng`  
 `docker build -t refng .`
 
 How to run server:  
