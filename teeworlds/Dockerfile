@@ -33,13 +33,18 @@ RUN apk add --no-cache \
 COPY --from=build /usr/local/share/teeworlds/ /usr/local/share/teeworlds/
 COPY --from=build /usr/local/bin/ /usr/local/bin/
 COPY teeworlds.cfg /usr/local/share/teeworlds/data/autoexec.cfg
-COPY teeworlds_srv.sh /usr/local/bin/teeworlds_srv.sh
+COPY *.sh /usr/local/bin/
 WORKDIR /usr/local/share/teeworlds/data/
+
+ENV BANLIST_PATH=/root/.teeworlds/banlist
+ENV CFG=/usr/local/share/teeworlds/data/autoexec.cfg
+ENV EXECUTABLE=/usr/local/bin/teeworlds_srv
 ENTRYPOINT ["teeworlds_srv.sh"]
+
 ENV EC_PORT=8303
 HEALTHCHECK \
 	--interval=10s \
 	--timeout=10s \
 	--start-period=3s \
 	--retries=2 \
-	CMD ss -4lt | grep "$EC_PORT"
+	CMD ss -4lnt | grep "$EC_PORT" || exit 1

@@ -34,13 +34,18 @@ COPY --from=build /usr/local/share/fng/ /usr/local/share/fng/
 COPY --from=build /usr/local/bin/ /usr/local/bin/
 COPY refng.cfg /usr/local/share/fng/data/autoexec.cfg
 COPY maps/*.map /usr/local/share/fng/data/maps/
-COPY refng.sh /usr/local/bin/refng.sh
+COPY *.sh /usr/local/bin/
 WORKDIR /usr/local/share/fng/data/
-ENTRYPOINT ["refng.sh"]
+
+ENV BANLIST_PATH=/root/.teeworlds/banlist
+ENV CFG=autoexec.cfg
+ENV EXECUTABLE=/usr/local/bin/fng2_srv
+ENTRYPOINT ["init.sh"]
+
 ENV EC_PORT=8303
 HEALTHCHECK \
 	--interval=10s \
 	--timeout=10s \
 	--start-period=3s \
 	--retries=2 \
-	CMD ss -4lt | grep "$EC_PORT"
+	CMD ss -4lnt | grep "$EC_PORT" || exit 1

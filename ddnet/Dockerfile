@@ -41,12 +41,18 @@ RUN apk add --no-cache \
 	
 COPY --from=build /ddnet/build /ddnet
 COPY ddnet.cfg /ddnet/data/autoexec_server.cfg
-COPY DDNet-Server.sh /ddnet/DDNet-Server.sh
+COPY *.sh /usr/local/bin/
 WORKDIR /ddnet
-ENTRYPOINT ["./DDNet-Server.sh"]
+
+ENV BANLIST_PATH=/root/.local/share/ddnet/banlist
+ENV CFG=/ddnet/data/autoexec_server.cfg
+ENV EXECUTABLE=/ddnet/DDNet-Server
+ENTRYPOINT ["init.sh"]
+
+ENV EC_PORT=8303
 HEALTHCHECK \
 	--interval=10s \
 	--timeout=10s \
 	--start-period=3s \
 	--retries=2 \
-	CMD ss -4lnt | grep "$EC_PORT"
+	CMD ss -4lnt | grep "$EC_PORT" || exit 1

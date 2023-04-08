@@ -42,9 +42,15 @@ COPY --from=build /usr/local/share/ddnet/ /usr/local/share/ddnet/
 COPY --from=build /usr/local/bin/ /usr/local/bin/
 COPY trainfng.cfg /usr/local/share/ddnet/data/autoexec_server.cfg
 COPY maps/*.map /usr/local/share/ddnet/data/maps/
-COPY TrainFNG.sh /usr/local/bin/TrainFNG.sh
+COPY *.sh /usr/local/bin/
 WORKDIR /usr/local/share/ddnet/data/
-ENTRYPOINT ["TrainFNG.sh"]
+
+ENV BANLIST_PATH=/root/.teeworlds/banlist
+ENV CFG=autoexec_server.cfg
+ENV EXECUTABLE=/usr/local/bin/TrainFNG-Server
+ENTRYPOINT ["init.sh"]
+
+ENV EC_PORT=8303
 HEALTHCHECK \
 	--interval=10s \
 	--timeout=10s \

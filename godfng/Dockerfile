@@ -38,13 +38,18 @@ RUN apk add --no-cache \
 COPY --from=build /teeworlds-godfng /teeworlds-godfng
 COPY godfng.cfg /teeworlds-godfng/autoexec.cfg
 COPY maps/*.map /teeworlds-godfng/data/maps/
-COPY godfng.sh /usr/local/bin/godfng.sh
+COPY *.sh /usr/local/bin/
 WORKDIR /teeworlds-godfng
-ENTRYPOINT ["godfng.sh"]
+
+ENV BANLIST_PATH=/root/.teeworlds/banlist
+ENV CFG=/teeworlds-godfng/autoexec.cfg
+ENV EXECUTABLE=/teeworlds-godfng/fng2_srv
+ENTRYPOINT ["init.sh"]
+
 ENV EC_PORT=8303
 HEALTHCHECK \
 	--interval=10s \
 	--timeout=10s \
 	--start-period=3s \
 	--retries=2 \
-	CMD ss -4lnt | grep "$EC_PORT"
+	CMD ss -4lnt | grep "$EC_PORT" || exit 1
