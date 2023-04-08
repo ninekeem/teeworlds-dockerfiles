@@ -2,8 +2,8 @@
 Dockerfiles of my teeworlds servers
 
 How to build docker images:  
-`cd <needed server>`
-`docker build -t <image name> .`
+`cd refng`
+`docker build -t refng .`
 
 How to run server:  
 `docker run -d -e EC_PORT=8303
