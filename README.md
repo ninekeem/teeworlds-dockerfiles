@@ -6,7 +6,9 @@ How to build docker images:
 `docker build -t refng .`
 
 How to run server:  
-`docker run -d -e EC_PORT=8303
+`docker run -d
+--network=host
+-e EC_PORT=8303
 -e SV_PORT=8303
 -e SV_MOTD='Welcome to my refng server'
 -e SV_NAME='refng server' refng:latest`
