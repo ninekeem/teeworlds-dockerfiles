@@ -39,7 +39,7 @@ WORKDIR /usr/local/share/teeworlds/data/
 ENV BANLIST_PATH=/root/.teeworlds/banlist
 ENV CFG=/usr/local/share/teeworlds/data/autoexec.cfg
 ENV EXECUTABLE=/usr/local/bin/teeworlds_srv
-ENTRYPOINT ["teeworlds_srv.sh"]
+ENTRYPOINT ["init.sh"]
 
 ENV EC_PORT=8303
 HEALTHCHECK \
