@@ -15,6 +15,8 @@ if env | grep -q "^MOD_COMMAND" ; then
 	mod_command_filler.sh
 fi
 
+generateVotesCfg.sh --anticamper=true --rounds=0 --run >> "$CFG"
+
 if [ "$BANLIST" = "true" ] ; then
 	echo "[init] Permanent banlist enabled!"
 	if [ -e "$BANLIST_PATH" ] ; then

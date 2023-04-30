@@ -15,7 +15,10 @@ if env | grep -q "^MOD_COMMAND" ; then
 	mod_command_filler.sh
 fi
 
-if [ "$BANLIST" = "true" ] ; then
+generateVotesCfg.sh --rounds=0 --run >> "$CFG"
+
+if [ "$BANLIST" ]
+then
 	echo "[init] Permanent banlist enabled!"
 	if [ -e "$BANLIST_PATH" ] ; then
 		echo "[init] Found banlist file, starting the server…"

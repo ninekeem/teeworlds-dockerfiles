@@ -32,6 +32,7 @@ RUN /bam/bam server_release
 FROM alpine:latest
 RUN apk update
 RUN apk add --no-cache \
+	bash \
 	cmd:ss \
 	libstdc++
 
@@ -44,6 +45,7 @@ WORKDIR /teeworlds-godfng
 ENV BANLIST_PATH=/root/.teeworlds/banlist
 ENV CFG=/teeworlds-godfng/autoexec.cfg
 ENV EXECUTABLE=/teeworlds-godfng/fng2_srv
+ENV MAPS_DIR=/teeworlds-godfng/data/maps
 ENTRYPOINT ["init.sh"]
 
 ENV EC_PORT=8303

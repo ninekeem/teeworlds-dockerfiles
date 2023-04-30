@@ -33,6 +33,7 @@ RUN make install -j$(nproc)
 
 FROM alpine:latest
 RUN apk add --no-cache \
+	bash \
 	cmd:ss \
 	libcurl \
 	libstdc++ \
@@ -48,6 +49,7 @@ WORKDIR /usr/local/share/ddnet/data/
 ENV BANLIST_PATH=/root/.teeworlds/banlist
 ENV CFG=autoexec_server.cfg
 ENV EXECUTABLE=/usr/local/bin/TrainFNG-Server
+ENV MAPS_DIR=/usr/local/share/ddnet/data/maps
 ENTRYPOINT ["init.sh"]
 
 ENV EC_PORT=8303

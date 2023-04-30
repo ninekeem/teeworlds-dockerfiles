@@ -10,6 +10,8 @@ if env | grep -q "^SV_" ; then
 	sv_filler.sh
 fi
 
+generateVotesCfg.sh --min-players-per-team=8 --misc=false --scorelimit=false --run >> "$CFG"
+
 if [ "$BANLIST" = "true" ] ; then
 	echo "[init] Permanent banlist enabled!"
 	if [ -e "$BANLIST_PATH" ] ; then

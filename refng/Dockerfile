@@ -27,6 +27,7 @@ RUN make install -j$(nproc)
 
 FROM alpine:latest
 RUN apk add --no-cache \
+	bash \
 	cmd:ss \
 	libstdc++
 
@@ -40,6 +41,7 @@ WORKDIR /usr/local/share/fng/data/
 ENV BANLIST_PATH=/root/.teeworlds/banlist
 ENV CFG=autoexec.cfg
 ENV EXECUTABLE=/usr/local/bin/fng2_srv
+ENV MAPS_DIR=/usr/local/share/fng/data/maps
 ENTRYPOINT ["init.sh"]
 
 ENV EC_PORT=8303
