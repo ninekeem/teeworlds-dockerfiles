@@ -6,5 +6,10 @@ do
     OPT=$(echo "${i}" | tr '[:upper:]' '[:lower:]' | awk -F'=' '{ print $1 }')
     VALUE=$(echo "${i}" | awk -F'=' '{ print $2 }' | tr '_' ' ')
     echo "[init][sv_filler] $OPT $VALUE"
-    sed -i s/"$OPT.*"/"$OPT $VALUE"/ "$CFG"
+    if grep -q "$OPT" "$CFG"
+    then
+        sed -i s/"$OPT.*"/"$OPT $VALUE"/ "$CFG"
+    else
+        echo "$OPT $VALUE" >> "$CFG"
+    fi
 done

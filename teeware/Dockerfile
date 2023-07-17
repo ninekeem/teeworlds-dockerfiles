@@ -45,7 +45,7 @@ RUN apk add --no-cache \
 	sqlite-libs
 	
 COPY --from=build /teeware-mod /teeware-mod
-COPY teeware-mod.cfg /teeware-mod/autoexec_server.cfg
+COPY teeware.cfg /teeware-mod/autoexec_server.cfg
 COPY *.sh /usr/local/bin/
 WORKDIR /teeware-mod
 
