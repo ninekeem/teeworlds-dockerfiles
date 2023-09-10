@@ -40,13 +40,15 @@ RUN apk add --no-cache \
 	sqlite-libs
 	
 COPY --from=build /ddnet/build /ddnet
-COPY ddnet.cfg /ddnet/data/autoexec_server.cfg
+COPY ddnet.cfg /ddnet/default_config.cfg
 COPY *.sh /usr/local/bin/
 WORKDIR /ddnet
 
 ENV BANLIST_PATH=/root/.local/share/ddnet/banlist
-ENV CFG=/ddnet/data/autoexec_server.cfg
-ENV EXECUTABLE=/ddnet/DDNet-Server
+ENV CONFIG_PATH=/ddnet/config/myServerconfig.cfg
+ENV DEFAULT_CONFIG_PATH=/ddnet/default_config.cfg
+ENV EXEC_PATH=/ddnet/DDNet-Server
+ENV MAPS_DIR=/ddnet/data/maps
 ENTRYPOINT ["init.sh"]
 
 ENV EC_PORT=8303

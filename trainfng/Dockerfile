@@ -50,6 +50,7 @@ ENV BANLIST_PATH=/root/.teeworlds/banlist
 ENV CFG=autoexec_server.cfg
 ENV EXECUTABLE=/usr/local/bin/TrainFNG-Server
 ENV MAPS_DIR=/usr/local/share/ddnet/data/maps
+ENV VOTE_GENERATOR=true
 ENTRYPOINT ["init.sh"]
 
 ENV EC_PORT=8303

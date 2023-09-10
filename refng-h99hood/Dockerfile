@@ -1,15 +1,14 @@
-FROM alpine:latest AS build
+FROM debian:stable-slim AS build
 
-RUN apk add --no-cache \
+RUN apt update && \
+    apt install -y --no-install-recommends \
+    build-essential \
+    ca-certificates \
+    cmake \
+    libcurl4-openssl-dev \
+    libpqxx-dev \
 	git \
-	cmake \
-	curl-dev \
-	make \
-	g++ \
-	gcc \
-	python3 \
-    libpq-dev \
-	zlib-dev
+    python3
 
 RUN git clone \
 	--depth 1 \
@@ -23,26 +22,26 @@ WORKDIR /refng/build
 RUN cmake .. \
 	-Wno-dev
 
-RUN make install -j$(nproc)
+RUN make -j$(nproc)
 
-FROM alpine:latest
-RUN apk add --no-cache \
-	bash \
-	cmd:ss \
-	libstdc++ \
-    libpq
+FROM debian:stable-slim
+RUN apt update && \
+    apt install -y --no-install-recommends \
+    libpqxx-6.4 \
+    libstdc++6
 
-COPY --from=build /usr/local/share/fng/ /usr/local/share/fng/
-COPY --from=build /usr/local/bin/ /usr/local/bin/
-COPY refng.cfg /usr/local/share/fng/data/autoexec.cfg
-COPY maps/*.map /usr/local/share/fng/data/maps/
+COPY --from=build /refng/build /refng
+COPY autoexec.cfg /refng/default_config.cfg
+COPY maps/*.map /refng/data/maps
 COPY *.sh /usr/local/bin/
-WORKDIR /usr/local/share/fng/data/
+WORKDIR /refng
 
 ENV BANLIST_PATH=/root/.teeworlds/banlist
-ENV CFG=autoexec.cfg
-ENV EXECUTABLE=/usr/local/bin/fng2_srv
-ENV MAPS_DIR=/usr/local/share/fng/data/maps
+ENV CONFIG_PATH=/refng/config/autoexec.cfg
+ENV DEFAULT_CONFIG_PATH=/refng/default_config.cfg
+ENV EXEC_PATH=/refng/fng2_srv
+ENV MAPS_DIR=/refng/data/maps
+ENV VOTE_GENERATOR=true
 ENTRYPOINT ["init.sh"]
 
 ENV EC_PORT=8303
@@ -51,4 +50,4 @@ HEALTHCHECK \
 	--timeout=10s \
 	--start-period=3s \
 	--retries=2 \
-	CMD ss -4lnt | grep "$EC_PORT" || exit 1
+	CMD ss -4lnt | grep -q "$EC_PORT" || exit 1

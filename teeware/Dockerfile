@@ -44,14 +44,16 @@ RUN apk add --no-cache \
 	libstdc++ \
 	sqlite-libs
 	
-COPY --from=build /teeware-mod /teeware-mod
-COPY teeware.cfg /teeware-mod/autoexec_server.cfg
+COPY --from=build /teeware-mod /teeware
+COPY teeware.cfg /teeware/default_config.cfg
 COPY *.sh /usr/local/bin/
-WORKDIR /teeware-mod
+WORKDIR /teeware
 
-ENV BANLIST_PATH=/root/.local/share/ddnet/banlist
-ENV CFG=/teeware-mod/autoexec_server.cfg
-ENV EXECUTABLE=/teeware-mod/TeeWare
+ENV BANLIST_PATH=/root/.teeworlds/banlist
+ENV DEFAULT_CONFIG_PATH=/teeware/default_config.cfg
+ENV CONFIG_PATH=/teeware/config/autoexec_server.cfg
+ENV EXEC_PATH=/teeware/TeeWare
+ENV VOTE_GENERATOR=false
 ENTRYPOINT ["init.sh"]
 
 ENV EC_PORT=8303
@@ -60,4 +62,4 @@ HEALTHCHECK \
 	--timeout=10s \
 	--start-period=3s \
 	--retries=2 \
-	CMD ss -4lnt | grep "$EC_PORT" || exit 1
+	CMD ss -4lnt | grep -q "$EC_PORT" || exit 1
