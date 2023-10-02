@@ -12,7 +12,7 @@ custom() {
     header "$1"
     env | sort | grep "$2" | while IFS= read -r i
     do
-        VALUE="$(echo "${i}" | awk -F'=' '{ print $2 }')"
+        VALUE="$(echo "${i}" | cut -d'=' -f2-)"
         OPT="$(echo "${i}" | awk -F'=' '{ print $3 }')"
         add_vote "$VALUE" "$OPT"
     done

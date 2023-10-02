@@ -6,7 +6,7 @@ envs_to_commands() {
         env | grep "$i" | while IFS= read -r j
         do
             OPT="$(echo "${j}" | tr '[:upper:]' '[:lower:]' | awk -F'=' '{ print $1 }')"
-            VALUE="$(echo "${j}" | awk -F'=' '{ print $2 }')"
+            VALUE="$(echo "${j}" | cut -d'=' -f2-)"
             configurator.sh "$OPT" "$VALUE"
         done
     done
@@ -26,7 +26,7 @@ permissions() {
     env | grep -e "^MOD_COMMAND" -e "^ACCESS_LEVEL" | while IFS= read -r i
     do
         TYPE="$(echo "${i}" | awk -F'=' '{ print $1 }')"
-        VALUE="$(echo "${i}" | awk -F'=' '{ print $2 }')"
+        VALUE="$(echo "${i}" | cut -d'=' -f2-)"
         OPT="$(echo "${i}" | awk -F'=' '{ print $3 }')"
         if echo "$TYPE" | grep -q "^ACCESS_LEVEL"
         then
