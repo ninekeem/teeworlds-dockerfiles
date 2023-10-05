@@ -1,0 +1,40 @@
+FROM alpine:latest AS bam
+RUN apk update
+RUN apk add --no-cache \
+	gcc \
+	git \
+	musl-dev
+
+RUN git clone \
+	https://github.com/matricks/bam
+
+WORKDIR /bam
+RUN git checkout v0.4.0
+RUN ./make_unix.sh
+
+FROM alpine:latest AS build
+RUN apk update
+RUN apk add --no-cache \
+	gcc \
+	g++ \
+	git \
+	python3
+
+RUN git clone \
+	--depth 1 \
+	--no-tags \
+	https://github.com/35niavlys/teeworlds-godfng
+
+WORKDIR /teeworlds-godfng
+COPY --from=bam /bam /bam
+RUN /bam/bam server_release
+
+FROM alpine:latest
+RUN apk update
+RUN apk add --no-cache \
+	libstdc++
+
+COPY --from=build /teeworlds-godfng /teeworlds-godfng
+WORKDIR /teeworlds-godfng
+
+ENTRYPOINT ["/teeworlds-godfng/fng2_srv"]

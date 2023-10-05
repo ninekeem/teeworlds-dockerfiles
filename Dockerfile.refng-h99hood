@@ -1,0 +1,36 @@
+FROM debian:stable-slim AS build
+
+RUN apt update && \
+    apt install -y --no-install-recommends \
+    build-essential \
+    ca-certificates \
+    cmake \
+    libcurl4-openssl-dev \
+    libpqxx-dev \
+	git \
+    python3
+
+RUN git clone \
+	--depth 1 \
+	--branch fng_06 \
+	--single-branch \
+	--no-tags \
+	--recursive \
+	https://github.com/h99developer/refng
+
+WORKDIR /refng/build
+RUN cmake .. \
+	-Wno-dev
+
+RUN make -j$(nproc)
+
+FROM debian:stable-slim
+RUN apt update && \
+    apt install -y --no-install-recommends \
+    libpqxx-6.4 \
+    libstdc++6
+
+COPY --from=build /refng/build /refng
+WORKDIR /refng
+
+ENTRYPOINT ["/refng/fng2_srv"]

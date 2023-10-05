@@ -1,0 +1,49 @@
+FROM alpine:latest AS bam
+RUN apk update
+RUN apk add --no-cache \
+	gcc \
+	git \
+	musl-dev
+
+RUN git clone \
+	https://github.com/matricks/bam
+
+WORKDIR /bam
+RUN git checkout v0.4.0
+RUN ./make_unix.sh
+
+FROM alpine:latest AS build
+RUN apk update
+RUN apk add git
+RUN git clone \
+	--depth 1 \
+	--single-branch \
+	--no-tags \
+	https://github.com/headshot2017/teeware-mod
+
+RUN apk add --no-cache \
+	cargo \
+	cmake \
+	curl-dev \
+	gcc \ 
+	g++ \
+	libpng-dev \
+	ninja \
+	python3 \
+	sqlite-dev
+
+WORKDIR teeware-mod/
+COPY --from=bam /bam /bam
+RUN /bam/bam server_release
+
+FROM alpine:latest
+RUN apk update
+RUN apk add --no-cache \
+	libcurl \
+	libstdc++ \
+	sqlite-libs
+	
+COPY --from=build /teeware-mod /teeware
+WORKDIR /teeware
+
+ENTRYPOINT ["/teeware"]
