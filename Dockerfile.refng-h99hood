@@ -30,7 +30,7 @@ RUN apt update && \
     libpqxx-6.4 \
     libstdc++6
 
-COPY --from=build /refng/build /refng
-WORKDIR /refng
+COPY --from=build /refng/build /tw
+WORKDIR /tw
 
-ENTRYPOINT ["/refng/fng2_srv"]
+ENTRYPOINT ["/tw/fng2_srv"]

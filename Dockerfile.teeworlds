@@ -1,12 +1,12 @@
 FROM alpine:latest AS build
 
-RUN apk add --no-cache \
-	git \
+RUN apk update && apk add --no-cache \
 	cmake \
 	curl-dev \
-	make \
 	g++ \
 	gcc \
+	git \
+	ninja \
 	python3 \
 	sqlite-dev \
 	zlib-dev
@@ -20,17 +20,17 @@ RUN git clone \
 
 WORKDIR /teeworlds/build
 RUN cmake .. \
-	-Wno-dev \
-	-DCLIENT=OFF
+	-Wnodev \
+	-DCLIENT=OFF \
+	-GNinja
 
-RUN make install -j$(nproc)
+RUN ninja
 
 FROM alpine:latest
 RUN apk add --no-cache \
 	libstdc++
 
-COPY --from=build /usr/local/share/teeworlds/ /usr/local/share/teeworlds/
-COPY --from=build /usr/local/bin/ /usr/local/bin/
-WORKDIR /usr/local/share/teeworlds/data/
+COPY --from=build /teeworlds/build /tw
+WORKDIR /tw
 
-ENTRYPOINT ["teeworlds_srv"]
+ENTRYPOINT ["/tw/teeworlds_srv"]

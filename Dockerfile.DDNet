@@ -1,44 +1,43 @@
 FROM alpine:latest AS build
-
 RUN apk update && apk add --no-cache \
+	cargo \
 	cmake \
 	curl-dev \
 	g++ \
-	gcc \
+	gcc \ 
 	git \
 	libpng-dev \
-	libwebsockets-dev \
 	ninja \
 	python3 \
-	sqlite-dev \
-	zlib-dev
+	sqlite-dev
 
 RUN git clone \
 	--depth 1 \
+	--recursive \
 	--single-branch \
 	--no-tags \
-	https://github.com/35niavlys/teeworlds-trainfng
+	https://github.com/ddnet/ddnet
 
-WORKDIR /teeworlds-trainfng/build
-RUN cmake .. \
-	-Wno-dev \
+WORKDIR /ddnet/build
+RUN cmake .. -Wno-dev \
 	-DAUTOUPDATE=OFF \
 	-DCLIENT=OFF \
-	-DMYSQL=OFF \
+	-DIPO=ON \
+	-DPREFER_BUNDLED_LIBS=OFF \
 	-DVIDEORECORDER=OFF \
-	-DUPNP=OFF \
+	-DVULKAN=OFF \
 	-DWEBSOCKETS=OFF \
 	-GNinja
 
 RUN ninja
 
 FROM alpine:latest
-RUN apk add --no-cache \
+RUN apk update && apk add --no-cache \
 	libcurl \
 	libstdc++ \
-	sqlite-dev
-
-COPY --from=build /teeworlds-trainfng/build /tw
+	sqlite-libs
+	
+COPY --from=build /ddnet/build /tw
 WORKDIR /tw
 
-ENTRYPOINT ["/tw/TrainFNG-Server"]
+ENTRYPOINT ["/tw/DDNet-Server"]

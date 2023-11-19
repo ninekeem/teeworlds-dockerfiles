@@ -23,16 +23,14 @@ RUN git clone \
 
 RUN apk add --no-cache \
 	cargo \
-	cmake \
 	curl-dev \
 	gcc \ 
 	g++ \
 	libpng-dev \
-	ninja \
 	python3 \
 	sqlite-dev
 
-WORKDIR teeware-mod/
+WORKDIR /teeware-mod
 COPY --from=bam /bam /bam
 RUN /bam/bam server_release
 
@@ -43,7 +41,7 @@ RUN apk add --no-cache \
 	libstdc++ \
 	sqlite-libs
 	
-COPY --from=build /teeware-mod /teeware
-WORKDIR /teeware
+COPY --from=build /teeware-mod /tw
+WORKDIR /tw
 
-ENTRYPOINT ["/teeware"]
+ENTRYPOINT ["/tw/TeeWare"]

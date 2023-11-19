@@ -1,6 +1,5 @@
 FROM alpine:latest AS bam
-RUN apk update
-RUN apk add --no-cache \
+RUN apk update && apk add --no-cache \
 	gcc \
 	git \
 	musl-dev
@@ -15,8 +14,8 @@ RUN ./make_unix.sh
 FROM alpine:latest AS build
 RUN apk update
 RUN apk add --no-cache \
-	gcc \
 	g++ \
+	gcc \
 	git \
 	python3
 
@@ -34,7 +33,7 @@ RUN apk update
 RUN apk add --no-cache \
 	libstdc++
 
-COPY --from=build /teeworlds-godfng /teeworlds-godfng
-WORKDIR /teeworlds-godfng
+COPY --from=build /teeworlds-godfng /tw
+WORKDIR /tw
 
-ENTRYPOINT ["/teeworlds-godfng/fng2_srv"]
+ENTRYPOINT ["/tw/fng2_srv"]
