@@ -7,6 +7,7 @@ RUN apk update && apk add --no-cache \
 	gcc \ 
 	git \
 	libpng-dev \
+	mariadb-dev \
 	ninja \
 	python3 \
 	sqlite-dev
@@ -20,6 +21,7 @@ RUN git clone \
 
 WORKDIR /ddnet/build
 RUN cmake .. -Wno-dev \
+	-DANTIBOT=ON \
 	-DAUTOUPDATE=OFF \
 	-DCLIENT=OFF \
 	-DIPO=ON \
@@ -27,6 +29,7 @@ RUN cmake .. -Wno-dev \
 	-DVIDEORECORDER=OFF \
 	-DVULKAN=OFF \
 	-DWEBSOCKETS=OFF \
+	-DMYSQL=ON \
 	-GNinja
 
 RUN ninja
@@ -35,9 +38,10 @@ FROM alpine:latest
 RUN apk update && apk add --no-cache \
 	libcurl \
 	libstdc++ \
+	mariadb-connector-c \
 	sqlite-libs
 	
 COPY --from=build /ddnet/build /tw
-WORKDIR /tw
+WORKDIR /tw/data
 
 ENTRYPOINT ["/tw/DDNet-Server"]
