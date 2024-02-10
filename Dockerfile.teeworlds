@@ -19,6 +19,8 @@ RUN git clone \
 	https://github.com/teeworlds/teeworlds
 
 WORKDIR /teeworlds/build
+RUN sed -i s@MAX_PLAYERS\=16@MAX_PLAYERS\=64@ ../src/engine/shared/protocol.h
+
 RUN cmake .. \
 	-Wnodev \
 	-DCLIENT=OFF \
@@ -30,7 +32,8 @@ FROM alpine:latest
 RUN apk add --no-cache \
 	libstdc++
 
-COPY --from=build /teeworlds/build /tw
+COPY --from=build /teeworlds/build/teeworlds_srv /tw/teeworlds_srv
+COPY --from=build /teeworlds/build/data /tw/data
 WORKDIR /tw
 
 ENTRYPOINT ["/tw/teeworlds_srv"]
