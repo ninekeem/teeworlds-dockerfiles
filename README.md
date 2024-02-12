@@ -91,12 +91,12 @@ spec:
   externalTrafficPolicy: Local # useful if you need to see real client IP, not cluster
   internalTrafficPolicy: Cluster
   ports:
-  - port: 8310
+  - port: 8303
     protocol: UDP
     targetPort: server
   selector:
     app: teeworlds
-  sessionAffinity: ClientIP # For more than 1 replicas. If player connects dummy, dummy stay on same server as player, who connected it
+  sessionAffinity: ClientIP # For more than 1 replicas. If player connects dummy, dummy stays on same server as player, who connected it
   type: LoadBalancer # Can be NodePort, but LB is more flexible
 ```
 #### econ.yaml
