@@ -1,20 +1,27 @@
 FROM alpine:latest AS bam
-RUN apk update
-RUN apk add --no-cache \
-	gcc \
-	git \
-	musl-dev
+
+RUN apk update && apk add --no-cache \
+	git
 
 RUN git clone \
 	https://github.com/matricks/bam
 
+RUN apk add --no-cache \
+	gcc \
+	musl-dev
+
 WORKDIR /bam
+
 RUN git checkout v0.4.0
 RUN ./make_unix.sh
 
+# ---
+
 FROM alpine:latest AS build
-RUN apk update
-RUN apk add git
+
+RUN apk update && apk add --no-cache \
+	git
+
 RUN git clone \
 	--depth 1 \
 	--single-branch \
@@ -31,17 +38,22 @@ RUN apk add --no-cache \
 	sqlite-dev
 
 WORKDIR /teeware-mod
+
 COPY --from=bam /bam /bam
+
 RUN /bam/bam server_release
 
+# ---
+
 FROM alpine:latest
-RUN apk update
-RUN apk add --no-cache \
+
+RUN apk update && apk add --no-cache \
 	libcurl \
 	libstdc++ \
 	sqlite-libs
 	
 COPY --from=build /teeware-mod /tw
+
 WORKDIR /tw
 
 ENTRYPOINT ["/tw/TeeWare"]

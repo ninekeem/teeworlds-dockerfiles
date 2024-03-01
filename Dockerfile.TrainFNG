@@ -1,11 +1,13 @@
 FROM alpine:latest AS build
 
 RUN apk update && apk add --no-cache \
+	git
+
+RUN apk update && apk add --no-cache \
 	cmake \
 	curl-dev \
 	g++ \
 	gcc \
-	git \
 	libpng-dev \
 	libwebsockets-dev \
 	ninja \
@@ -20,6 +22,7 @@ RUN git clone \
 	https://github.com/35niavlys/teeworlds-trainfng
 
 WORKDIR /teeworlds-trainfng/build
+
 RUN cmake .. \
 	-Wno-dev \
 	-DAUTOUPDATE=OFF \
@@ -32,6 +35,8 @@ RUN cmake .. \
 
 RUN ninja
 
+# ---
+
 FROM alpine:latest
 RUN apk add --no-cache \
 	libcurl \
@@ -39,6 +44,7 @@ RUN apk add --no-cache \
 	sqlite-dev
 
 COPY --from=build /teeworlds-trainfng/build /tw
+
 WORKDIR /tw
 
 ENTRYPOINT ["/tw/TrainFNG-Server"]
