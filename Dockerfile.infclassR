@@ -1,0 +1,58 @@
+FROM alpine:latest AS build
+
+RUN apk update \
+	&& apk upgrade \
+	&& apk add --no-cache git
+
+RUN apk add --no-cache \
+	openssl \
+	gcc \
+	g++ \
+	make \
+	cmake \
+	python3 \
+	zlib-dev \
+	icu-dev \
+	libmaxminddb-dev \
+	sqlite-dev \
+	openssl \
+	curl-dev \
+	libpng-dev
+
+WORKDIR /work/
+
+RUN git clone \
+	https://github.com/infclass/teeworlds-infclassR/
+
+WORKDIR /work/build
+RUN cmake /work/teeworlds-infclassR  -Wno-dev -DCMAKE_INSTALL_PREFIX=/work/install -DSERVER_EXECUTABLE=server -DDOWNLOAD_GTEST=ON
+RUN cmake --build . -t install
+
+# ---
+
+FROM alpine:latest
+
+WORKDIR /infclass_srv/
+
+RUN apk update && apk upgrade
+
+RUN apk add --no-cache \
+	openssl \
+	gcc \
+	g++ \
+	make \
+	cmake \
+	python3 \
+	zlib-dev \
+	icu-dev \
+	libmaxminddb-dev \
+	sqlite-dev \
+	openssl \
+	curl-dev \
+	libpng-dev \
+	vim \
+	nano
+
+COPY --from=build /work/install .
+
+ENTRYPOINT ["./server"]
