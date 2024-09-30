@@ -7,6 +7,9 @@
 ### Build all images
 `/bin/sh scripts/build_all.sh`
 
+#### Use can also pass environment variables
+`CONTAINER_REGISTRY='registry.example.com:1337' ECON_CLIENTS=128 /bin/sh scripts/build_all.sh`
+
 ## Usage
 You should specify your main config if you use custom name or path with `command` in docker compose like:
 `command: -f config/entrypoint`
@@ -16,16 +19,20 @@ You should specify your main config if you use custom name or path with `command
 #### docker-compose.yaml
 ```
 services:
-  teeworlds:
+  tw:
     build:
-      context: .
-      dockerfile: ../teeworlds-dockerfiles/Dockerfile.teeworlds
-    command: -f config/entrypoint # custom config path
-    container_name: tw
-    network_mode: host # optional, but try to avoid non-direct forwaring like 8310:8303 if you don't know what to do
+      args:
+        ECON_CLIENTS: 128
+      context: ../../dockerfiles
+      dockerfile: Dockerfile.teeworlds
+    command: -f config/entrypoint
+    container_name: teeworlds
+    image: teeworlds
+    network_mode: host # use it wisely
     restart: always
-    volumes: # use you own config
+    volumes:      
       - ./config:/tw/data/config
+
 ```
 
 ### Kubernetes
