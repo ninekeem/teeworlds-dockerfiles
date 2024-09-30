@@ -1,0 +1,34 @@
+# git clone https://github.com/jxsl13/zcatch --branch zCatch ./modes/zcatch
+
+FROM alpine:3.12.12 AS build
+
+RUN apk add --no-cache \
+	bam \
+	g++ \
+	gcc \
+	python2
+
+COPY ./modes/zcatch /tw/sources
+COPY scripts/* /usr/local/bin
+
+# Set max ECON clients
+ARG ECON_CLIENTS
+RUN /bin/sh /usr/local/bin/patches.sh
+
+WORKDIR /tw/sources
+
+# Yes, there is Makefile in repo, but we don't need useless dependencies who do the same, yeah?
+RUN bam -j "$(nproc)" -a server_release
+
+# ---
+
+FROM alpine:3.12.12
+RUN apk update && apk add --no-cache \
+	libstdc++
+
+COPY --from=build /tw/sources/zcatch_srv /tw/bin/zcatch_srv
+COPY --from=build /tw/sources/data/maps /tw/data/maps
+
+WORKDIR /tw/data
+
+ENTRYPOINT ["/tw/bin/zcatch_srv"]

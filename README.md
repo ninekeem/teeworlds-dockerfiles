@@ -4,6 +4,9 @@
 ### Docker
 `docker build -f Dockerfile.teeworlds -t teeworlds .`
 
+### Build all images
+`/bin/sh scripts/build_all.sh`
+
 ## Usage
 You should specify your main config if you use custom name or path with `command` in docker compose like:
 `command: -f config/entrypoint`

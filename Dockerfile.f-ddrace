@@ -1,18 +1,18 @@
-# git clone https://github.com/teeworlds/teeworlds --branch 0.6 ./modes/teeworlds
+FROM alpine:3.12.12 AS build
 
-FROM alpine:3.20.3 AS build
-
-RUN apk add --no-cache \
+RUN apk add --no-cache -- \
 	cmake \
-	curl-dev \
-	g++ \
+	freetype-dev \
 	gcc \
+	g++ \
+	curl-dev \
+	libpng-dev \
 	ninja \
+	openssl-dev \
 	python3 \
-	sqlite-dev \
-	zlib-dev
+	sdl2-dev
 
-COPY ./modes/teeworlds /tw/sources
+COPY ./modes/f-ddrace-s /tw/sources
 COPY scripts/* /usr/local/bin
 
 # Set max ECON clients
@@ -23,24 +23,29 @@ WORKDIR /tw/build
 
 RUN cmake /tw/sources \
 	-Wno-dev \
+	-DCMAKE_CXX_FLAGS="-Wc++11-compat" \
     -DCMAKE_INSTALL_PREFIX=/tw/install \
+	-DANTIBOT=ON \
 	-DCLIENT=OFF \
 	-DDEV=OFF \
-	-DIPO=ON \
+	-DMYSQL=OFF \
+	-DPREFER_BUNDLED_LIBS=ON \
 	-GNinja
 
 RUN cmake --build . -t install
 
 # ---
 
-FROM alpine:3.20.3 AS teeworlds
-
-RUN apk update && apk add --no-cache \
+FROM alpine:3.12.12 AS f-ddrace
+RUN apk add --no-cache -- \
+	ca-certificates \
+	curl \
+	libcurl \
 	libstdc++
 
-COPY --from=build /tw/install/bin/teeworlds_srv /tw/bin/teeworlds_srv
+COPY --from=build /tw/install/bin /tw/bin
+COPY --from=build /tw/install/lib /tw/lib
 COPY --from=build /tw/install/share/teeworlds/data/maps /tw/data/maps
 
 WORKDIR /tw/data
-
 ENTRYPOINT ["/tw/bin/teeworlds_srv"]

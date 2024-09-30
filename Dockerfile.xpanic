@@ -13,11 +13,12 @@ RUN ./make_unix.sh
 
 # ---
 
-# git clone https://github.com/headshot2017/teeware-mod ./modes/teeware
+# git clone https://github.com/ST-Chara/xPanic ./modes/xpanic
 
 FROM alpine:3.19.4 AS build
+# FROM alpine:3.12 AS build
 
-COPY ./modes/teeware /tw/sources
+COPY ./modes/xpanic /tw/sources
 COPY scripts/* /usr/local/bin
 
 # Set max ECON clients
@@ -28,6 +29,7 @@ RUN apk add --no-cache \
 	curl-dev \
 	gcc \ 
 	g++ \
+    icu-dev \
 	libpng-dev \
 	python3 \
 	sqlite-dev
@@ -40,16 +42,18 @@ RUN /bam/bam -j "$(nproc)" server_release
 
 # ---
 
-FROM alpine:3.19.4 AS teeware
+FROM alpine:3.19.4 AS xpanic
 
 RUN apk add --no-cache \
+	icu \
 	libcurl \
 	libstdc++ \
 	sqlite-libs
-	
-COPY --from=build /tw/sources/TeeWare /tw/bin/TeeWare
+
+COPY --from=build /tw/sources/xPanic-Server /tw/bin/xPanic-Server
 COPY --from=build /tw/sources/maps /tw/data/maps
+COPY --from=build /tw/sources/server_lang /tw/data/server_lang
 
 WORKDIR /tw/data
 
-ENTRYPOINT ["/tw/bin/TeeWare"]
+ENTRYPOINT ["/tw/bin/xPanic-Server"]

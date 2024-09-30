@@ -1,0 +1,43 @@
+FROM debian:bookworm-slim AS build
+
+RUN apt update && apt install -y --no-install-recommends \
+    build-essential \
+    ca-certificates \
+    cmake \
+	ninja-build \
+    libcurl4-openssl-dev \
+    libpqxx-dev \
+    python3
+
+COPY ./modes/refng /tw/sources
+COPY scripts/* /usr/local/bin
+
+# Set max ECON clients
+ARG ECON_CLIENTS
+RUN /bin/sh /usr/local/bin/patches.sh
+
+WORKDIR /tw/build
+
+RUN cmake /tw/sources \
+	-Wno-dev \
+    -DCMAKE_INSTALL_PREFIX=/tw/install \
+	-DCLIENT=OFF \
+	-DDEV=OFF \
+	-GNinja
+
+RUN cmake --build . -t install
+
+# ---
+
+FROM debian:bookworm-slim AS refng
+
+RUN apt update && apt install -y --no-install-recommends \
+    libpqxx-6.4 \
+    libstdc++6
+
+COPY --from=build /tw/install/bin /tw/bin
+COPY --from=build /tw/install/share/fng/data/maps /tw/data/maps
+
+WORKDIR /tw/data
+
+ENTRYPOINT ["/tw/bin/fng2_srv"]

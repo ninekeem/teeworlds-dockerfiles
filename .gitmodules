@@ -4,3 +4,6 @@
 [submodule "tw-econ-telegram-bridge"]
 	path = tw-econ-telegram-bridge
 	url = https://github.com/xbt573/tw-econ-telegram-bridge
+[submodule "bam"]
+	path = bam
+	url = https://github.com/matricks/bam

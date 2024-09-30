@@ -1,0 +1,58 @@
+# git clone https://github.com/infclass/teeworlds-infclassR ./modes/infclassr
+
+FROM alpine:3.20.3 AS build
+
+RUN apk update && apk add --no-cache \
+    cmake \
+    curl-dev \
+    g++ \
+    gcc \ 
+    icu-dev \
+    libpng-dev \
+    libwebsockets-dev \
+    ninja \
+    python3 \
+	sqlite-dev
+
+COPY ./modes/infclassr /tw/sources
+COPY scripts/* /usr/local/bin
+
+# Set max ECON clients
+ARG ECON_CLIENTS
+RUN /bin/sh /usr/local/bin/patches.sh
+
+WORKDIR /tw/build
+
+RUN cmake /tw/sources \
+	-Wno-dev \
+    -DCMAKE_INSTALL_PREFIX=/tw/install \
+	-DANTIBOT=ON \
+	-DAUTOUPDATE=OFF \
+	-DCLIENT=OFF \
+	-DIPO=ON \
+	-DDEV=OFF \
+	-DPREFER_BUNDLED_LIBS=OFF \
+	-DVIDEORECORDER=OFF \
+	-DVULKAN=OFF \
+	-DWEBSOCKETS=ON \
+    -GNinja
+
+RUN cmake --build . --target install
+
+# ---
+
+FROM alpine:3.20.3 AS infclassr
+
+RUN apk update && apk add --no-cache \
+    icu \
+    libcurl \
+    libpng \
+    libstdc++ \
+    libwebsockets \
+    sqlite-libs
+
+COPY --from=build /tw/install /tw
+
+WORKDIR /tw
+
+ENTRYPOINT ["/tw/Infclass-Server"]

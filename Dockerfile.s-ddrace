@@ -1,0 +1,56 @@
+FROM debian:bookworm-slim AS build
+
+RUN apt update && apt install -y --no-install-recommends \
+	ca-certificates \
+	cargo \
+	cmake \
+	g++ \
+	gcc \
+	git \
+	libcurl4-openssl-dev \
+	libpng-dev \
+	libsqlite3-dev \
+	libssl-dev \
+	ninja-build \
+	python3
+
+ADD ./modes/s-ddrace /tw/sources
+COPY scripts/* /usr/local/bin
+
+# Set max ECON clients
+ARG ECON_CLIENTS
+RUN /bin/sh /usr/local/bin/patches.sh
+
+WORKDIR /tw/build
+
+RUN cmake /tw/sources \
+	-Wno-dev \
+    -DCMAKE_INSTALL_PREFIX=/tw/install \
+	-DAUTOUPDATE=OFF \
+	-DCLIENT=OFF \
+	-DIPO=ON \
+	-DPREFER_BUNDLED_LIBS=OFF \
+	-DVIDEORECORDER=OFF \
+	-DDEV=OFF \
+	-DVULKAN=OFF \
+	-DWEBSOCKETS=OFF \
+	-GNinja
+
+RUN cmake --build . -t install
+
+# ---
+
+FROM debian:bookworm-slim AS s-ddrace
+RUN apt update && apt install -y --no-install-recommends \
+	ca-certificates \
+	libcurl4 \
+	libstdc++6 \
+	libsqlite3-0
+
+COPY --from=build /tw/install/bin /tw/bin
+COPY --from=build /tw/install/lib /tw/lib
+COPY --from=build /tw/install/share/ddnet/data/maps /tw/data/maps
+
+WORKDIR /tw/data
+
+ENTRYPOINT ["/tw/bin/DDNetPP"]
