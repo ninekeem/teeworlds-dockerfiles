@@ -81,7 +81,7 @@ spec:
             port: 8000
           timeoutSeconds: 1
         volumeMounts: # custom config path
-        - mountPath: /tw/config
+        - mountPath: /tw/data/config
           name: config
       dnsPolicy: ClusterFirst # can be both ClusterFirst and Default
       imagePullSecrets:
